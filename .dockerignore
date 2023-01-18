@@ -19,4 +19,4 @@ log
 **/*.lprof
 
 # (OPTION) Ignore mount points.
-# data
+data
