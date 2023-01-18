@@ -11,14 +11,14 @@ RUN echo 'Etc/UTC' > /etc/timezone \
   && ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime
 
 # (OPTION) Add VNC server & noVNC web app for debugging and control.
-# COPY ./.devcontainer/scripts/desktop-lite-debian.sh /tmp/scripts/desktop-lite-debian.sh
-# ENV DBUS_SESSION_BUS_ADDRESS="autolaunch:" \
-#   VNC_RESOLUTION="1440x768x16" \
-#   VNC_DPI="96" \
-#   VNC_PORT="5901" \
-#   NOVNC_PORT="6080" \
-#   DISPLAY=":1"
-# RUN bash /tmp/scripts/desktop-lite-debian.sh root password
+COPY ./.devcontainer/scripts/desktop-lite-debian.sh /tmp/scripts/desktop-lite-debian.sh
+ENV DBUS_SESSION_BUS_ADDRESS="autolaunch:" \
+  VNC_RESOLUTION="1440x768x16" \
+  VNC_DPI="96" \
+  VNC_PORT="5901" \
+  NOVNC_PORT="6080" \
+  DISPLAY=":1"
+RUN bash /tmp/scripts/desktop-lite-debian.sh root password
 
 RUN mkdir -p /etc/OpenCL/vendors && \
   echo "libnvidia-opencl.so.1" > /etc/OpenCL/vendors/nvidia.icd
@@ -43,7 +43,7 @@ ENV ROS_DISTRO=$ROS_DISTRO
 RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-ros-core \
   # (OPTION) Add RQT for debugging and control.
-  # ~nros-${ROS_DISTRO}-rqt* \
+  ~nros-${ROS_DISTRO}-rqt* \
   python3-rosdep \
   python3-colcon-common-extensions \
   python3-pip \
@@ -65,15 +65,15 @@ RUN echo "exec bash" >> ~/.shrc
 RUN echo "source /opt/ros/$ROS_DISTRO/setup.bash\nsource /code/install/local_setup.bash" >> ~/.bashrc
 
 # (OPTION) Uncomment below if using RQT for icons to show up.
-# RUN mkdir ~/.icons && ln -s /usr/share/icons/Tango ~/.icons/hicolor
+RUN mkdir ~/.icons && ln -s /usr/share/icons/Tango ~/.icons/hicolor
 
 COPY ./entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 # (OPTION) Expose rosbridge port & noVNC port respectively.
-# EXPOSE 9090 6080
+EXPOSE 9090 6080
 ENTRYPOINT [ \
   # (OPTION) VNC entrypoint
-  # "/usr/local/share/desktop-init.sh", \
+  "/usr/local/share/desktop-init.sh", \
   # ROS entrypoint
   "/entrypoint.sh" \
   ]
