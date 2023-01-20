@@ -1,0 +1,53 @@
+# https://docs.ros.org/en/humble/How-To-Guides/Launch-file-different-formats.html
+# https://github.com/ros2/launch/tree/rolling/launch_yaml
+# Visit above on how to write launch files.
+# YAML is very case sensitive!
+launch:
+  - arg:
+      name: use_compression
+      default: 'True'
+  - arg:
+      name: use_ssl
+      default: 'False'
+  - arg:
+      name: certfile
+      default: /data/server.crt
+  - arg:
+      name: keyfile
+      default: /data/server.key
+
+  - include:
+      file: $(find-pkg-share aiortc_ros)/rosbridge_websocket_launch.xml
+      arg:
+        - name: port
+          value: '9090'
+        - name: address
+          value: '0.0.0.0'
+        - name: use_compression
+          value: $(var use_compression)
+        - name: ssl
+          value: $(var use_ssl)
+        - name: certfile
+          value: $(var certfile)
+        - name: keyfile
+          value: $(var keyfile)
+
+  - group:
+      - push_ros_namespace:
+          namespace: /rtc
+      - node:
+          pkg: aiortc_ros
+          exec: recv
+          name: rtc_receiver
+          respawn: 'True'
+          param:
+            - name: use_compression
+              value: $(var use_compression)
+      - node:
+          pkg: aiortc_ros
+          exec: send
+          name: rtc_sender
+          respawn: 'True'
+          param:
+            - name: frames_in_topic
+              value: rtc_receiver/frames_out

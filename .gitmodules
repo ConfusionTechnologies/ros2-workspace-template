@@ -1,3 +1,9 @@
 [submodule "example_module"]
 	path = example_module
 	url = https://github.com/Interpause/ros-example-node.git
+[submodule "ros-nice-node"]
+	path = ros-nice-node
+	url = https://github.com/confusiontechnologies/ros-nice-node.git
+[submodule "ros-nice-api"]
+	path = ros-nice-api
+	url = https://github.com/confusiontechnologies/ros-nice-api.git
